@@ -18,19 +18,22 @@ public class MyBench {
     @State(Scope.Thread)
     public static class MyState {
 
-        @Param({"1", "10", "100", "1000", "100000"})
+        private Connection connection;
+
+        @Param({"1", "10", "100", "1000", "10000"})
         public int size;
 
         @Param({"mysql", "mariadb"})
         public String driver;
 
-        private Connection connection;
+        @Param({"false", "true"})
+        public String binary;
 
         @Setup(Level.Trial)
         public void createConnections() throws Exception {
             String connectionString = String.format(
                     "jdbc:%s://localhost/db?user=root&sslMode=DISABLED&useServerPrepStmts=%s",
-                    driver, false);
+                    driver, binary);
             connection = DriverManager.getConnection(connectionString);
         }
 
