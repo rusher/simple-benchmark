@@ -1,6 +1,5 @@
 package org.benchmark;
 
-import com.mysql.cj.jdbc.Driver;
 import org.openjdk.jmh.annotations.*;
 
 import java.sql.*;
@@ -15,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class MyBench {
 
+    /**
+     * Initialize method for each benchmark thread
+     */
     @State(Scope.Thread)
     public static class MyState {
 
@@ -43,16 +45,24 @@ public class MyBench {
         }
     }
 
+    /**
+     * Method to benchmark
+     * @param state benchmarl state
+     * @return results
+     * @throws SQLException if any error occurs
+     */
     @Benchmark
     public int[] testSeq(MyState state) throws SQLException {
-        int[] values = new int[state.size];
         int i = 0;
+        int[] values = new int[state.size];
+
         try (PreparedStatement prep = state.connection.prepareStatement("select * from seq_1_to_" + state.size)) {
             ResultSet rs = prep.executeQuery();
             while (rs.next()) {
                 values[i++] = rs.getInt(1);
             }
         }
+
         return values;
     }
 }
